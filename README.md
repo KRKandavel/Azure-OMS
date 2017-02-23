@@ -1,2 +1,2 @@
 # Azure-OMS
-GitHub Hello World project for learning purpose
+GitHub Azure-OMS project is for creating OMS Solution samples
