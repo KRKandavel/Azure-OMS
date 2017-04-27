@@ -73,8 +73,8 @@
 
     "variables": {
         "nestedTemplates": {
-            "omsSolutionsSample41": "[concat(parameters('_artifactsLocation'), '/childtemplates/OMSSolutionsSample41.json')]",
-            "omsSolutionsSample42": "[concat(parameters('_artifactsLocation'), '/childtemplates/OMSSolutionsSample42.json')]"
+            "omsSolutionsSample41": "[concat(parameters('_artifactsLocation'), '/OMSSolutionsSample41.json')]",
+            "omsSolutionsSample42": "[concat(parameters('_artifactsLocation'), '/OMSSolutionsSample42.json')]"
         }
     },
 
