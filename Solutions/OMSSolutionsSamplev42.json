@@ -1,0 +1,451 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the name of your existing OMS Workspace name to store the configuration"
+            }
+        },
+
+        "workspaceRegionId": {
+            "type": "string",
+            "defaultValue": "SouthEast Asia",
+            "allowedValues": [
+                "SouthEast Asia",
+                "East US"
+            ],
+            "metadata": {
+                "description": "Specify the region for your OMS workspace"
+            }
+        },
+
+        "accountName": {
+            "type": "string",
+            "defaultValue": "JP1/AJS3 Automation Account",
+            "metadata": {
+                "description": "Specify the name of your Automation Account"
+            }
+        },
+
+        "regionId": {
+            "type": "string",
+            "defaultValue": "SouthEast Asia",
+            "allowedValues": [
+                "SouthEast Asia",
+                "East US2"
+            ],
+            "metadata": {
+                "description": "Specify region for your automation account"
+            }
+        },
+
+        "pricingTier": {
+            "type": "string",
+            "defaultValue": "pernode",
+            "allowedValues": [
+                "pernode",
+                "Standalone",
+                "Free"
+            ],
+            "metadata": {
+                "description": "Specify pricing tier for your workspace usage"
+            }
+        }
+    },
+
+    "variables": {
+        "LogAnalyticsApiVersion": "2015-11-01-preview",
+        "omsSolutions": {
+            "customSolution": {
+                "name": "JP1 Scheduler",
+                "solutionName": "[concat('JP1 Scheduler', '[', parameters('workspaceName'), ']')]",
+                "publisher": "test@contoso.com",
+                "displayName": "JP1 Scheduler",
+                "description": "JP1 Scheduler",
+                "author": "test@contoso.com"
+            }
+        },
+        "customViews": {
+            "view1" :{
+                "name": "JP1 SCHEDULER",
+                "displayName": "JP1 SCHEDULER"
+            }
+        }
+    },
+
+    "resources": [
+        {
+            "name": "[parameters('workspaceName')]",
+            "type": "Microsoft.OperationalInsights/workspaces",
+            "apiVersion": "[variables('LogAnalyticsApiVersion')]",
+            "location": "[parameters('workspaceRegionId')]",
+            "properties": {
+                "sku": {
+                    "name": "[parameters('pricingTier')]" 
+                }
+            },
+            "resources": [
+            {
+                "apiVersion": "[variables('LogAnalyticsApiVersion')]",
+                "name": "[variables('customViews').view1.name]",
+                "type": "views",
+                "location": "[parameters('workspaceRegionId')]",
+                "dependson": [
+                    "[Concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
+                ],
+                    "properties": {
+                        "Id": "JP1 SCHEDULER",
+                        "Name": "JP1 SCHEDULER",
+                        "Author": "k_r_kandavel@hotmail.com",
+                        "Source": "Local",
+                        "Dashboard": [
+                            {
+                                "Id": "SingleQueryDonutBuilderBladeV1",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "参照・操作・更新コマンドの配分",
+                                        "newGroup": false,
+                                        "icon": "",
+                                        "useIcon": false
+                                    },
+                                    "Header": {
+                                        "Title": "コマンドの配分",
+                                        "Subtitle": ""
+                                    },
+                                    "Donut": {
+                                        "Query": "* Type=SCHEDULER_Command_CL | measure count(ComName_s) by ComName_s",
+                                        "CenterLegend": {
+                                            "Text": "Total",
+                                            "Operation": "Sum",
+                                            "ArcsToSelect": []
+                                        },
+                                        "Options": {
+                                            "colors": [
+                                                "#00188f",
+                                                "#0072c6",
+                                                "#00bcf2"
+                                            ],
+                                            "valueColorMapping": []
+                                        }
+                                    },
+                                    "List": {
+                                        "Query": "* Type=SCHEDULER_Command_CL | measure count(ComName_s) by ComName_s",
+                                        "HideGraph": false,
+                                        "enableSparklines": false,
+                                        "operation": "Summary",
+                                        "ColumnsTitle": {
+                                            "Name": "Computer",
+                                            "Value": "Count"
+                                        },
+                                        "Color": "#0072c6",
+                                        "thresholds": {
+                                            "isEnabled": false,
+                                            "values": [
+                                                {
+                                                    "name": "Normal",
+                                                    "threshold": "Default",
+                                                    "color": "#009e49",
+                                                    "isDefault": true
+                                                },
+                                                {
+                                                    "name": "Warning",
+                                                    "threshold": "60",
+                                                    "color": "#fcd116",
+                                                    "isDefault": false
+                                                },
+                                                {
+                                                    "name": "Error",
+                                                    "threshold": "90",
+                                                    "color": "#ba141a",
+                                                    "isDefault": false
+                                                }
+                                            ]
+                                        },
+                                        "NameDSVSeparator": "",
+                                        "NavigationQuery": "{selected item}"
+                                    }
+                                }
+                            },
+                            {
+                                "Id": "LineChartCalloutStackedBuilderBlade",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "JP1 Scheduler Command distribution",
+                                        "newGroup": false
+                                    },
+                                    "charts": [
+                                        {
+                                            "Header": {
+                                                "Title": "参照コマンドの配分",
+                                                "Subtitle": ""
+                                            },
+                                            "LineChart": {
+                                                "Query": "* Type=SCHEDULER_Command_CL ComName_s=ALTER or AJSSHOW  | measure count(ComName_s) by  StartDate_t, ComName_s",
+                                                "yAxis": {
+                                                    "isLogarithmic": false,
+                                                    "units": {
+                                                        "baseUnitType": "",
+                                                        "baseUnit": "",
+                                                        "displayUnit": ""
+                                                    },
+                                                    "customLabel": ""
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "Header": {
+                                                "Title": "操作コマンドの配分",
+                                                "Subtitle": ""
+                                            },
+                                            "LineChart": {
+                                                "Query": "* Type=SCHEDULER_Command_CL ComName_s=ENTRY  | measure count(ComName_s) by  StartDate_t, ComName_s",
+                                                "yAxis": {
+                                                    "isLogarithmic": false,
+                                                    "units": {
+                                                        "baseUnitType": "",
+                                                        "baseUnit": "",
+                                                        "displayUnit": ""
+                                                    },
+                                                    "customLabel": ""
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "Header": {
+                                                "Title": "更新コマンドの配分",
+                                                "Subtitle": ""
+                                            },
+                                            "LineChart": {
+                                                "Query": "* Type=SCHEDULER_Command_CL ComName_s=DEFINE or COPY  | measure count(ComName_s) by  StartDate_t, ComName_s",
+                                                "yAxis": {
+                                                    "isLogarithmic": false,
+                                                    "units": {
+                                                        "baseUnitType": "",
+                                                        "baseUnit": "",
+                                                        "displayUnit": ""
+                                                    },
+                                                    "customLabel": ""
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "Id": "SingleQueryDonutBuilderBladeV1",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "コマンド別の実行時間",
+                                        "newGroup": false,
+                                        "icon": "",
+                                        "useIcon": false
+                                    },
+                                    "Header": {
+                                        "Title": "コマンド別の実行時間",
+                                        "Subtitle": ""
+                                    },
+                                    "Donut": {
+                                        "Query": "* Type=SCHEDULER_Command_CL | extend div(ms(EndDate_t, StartDate_t), 1000) as timeDiff  |  measure max(timeDiff) by LogType_s",
+                                        "CenterLegend": {
+                                            "Text": "Total",
+                                            "Operation": "Sum",
+                                            "ArcsToSelect": []
+                                        },
+                                        "Options": {
+                                            "colors": [
+                                                "#00188f",
+                                                "#0072c6",
+                                                "#00bcf2"
+                                            ],
+                                            "valueColorMapping": []
+                                        }
+                                    },
+                                    "List": {
+                                        "Query": "* Type=SCHEDULER_Command_CL | extend div(ms(EndDate_t, StartDate_t), 1000) as timeDiff  |  measure max(timeDiff) by LogType_s",
+                                        "HideGraph": false,
+                                        "enableSparklines": false,
+                                        "operation": "Summary",
+                                        "ColumnsTitle": {
+                                            "Name": "コマンド",
+                                            "Value": "最大処理時間"
+                                        },
+                                        "Color": "#0072c6",
+                                        "thresholds": {
+                                            "isEnabled": false,
+                                            "values": [
+                                                {
+                                                    "name": "Normal",
+                                                    "threshold": "Default",
+                                                    "color": "#009e49",
+                                                    "isDefault": true
+                                                },
+                                                {
+                                                    "name": "Warning",
+                                                    "threshold": "60",
+                                                    "color": "#fcd116",
+                                                    "isDefault": false
+                                                },
+                                                {
+                                                    "name": "Error",
+                                                    "threshold": "90",
+                                                    "color": "#ba141a",
+                                                    "isDefault": false
+                                                }
+                                            ]
+                                        },
+                                        "NameDSVSeparator": "",
+                                        "NavigationQuery": "{selected item}"
+                                    }
+                                }
+                            },
+                            {
+                                "Id": "SingleQueryDonutBuilderBladeV1",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "コマンド別の実行時間",
+                                        "newGroup": false,
+                                        "icon": "",
+                                        "useIcon": false
+                                    },
+                                    "Header": {
+                                        "Title": "コマンド別の実行時間",
+                                        "Subtitle": ""
+                                    },
+                                    "Donut": {
+                                        "Query": "* Type=SCHEDULER_Command_CL | extend div(ms(EndDate_t, StartDate_t), 1000) as timeDiff  |  measure avg(timeDiff) by LogType_s",
+                                        "CenterLegend": {
+                                            "Text": "Total",
+                                            "Operation": "Sum",
+                                            "ArcsToSelect": []
+                                        },
+                                        "Options": {
+                                            "colors": [
+                                                "#00188f",
+                                                "#0072c6",
+                                                "#00bcf2"
+                                            ],
+                                            "valueColorMapping": []
+                                        }
+                                    },
+                                    "List": {
+                                        "Query": "* Type=SCHEDULER_Command_CL | extend div(ms(EndDate_t, StartDate_t), 1000) as timeDiff  |  measure avg(timeDiff) by LogType_s",
+                                        "HideGraph": false,
+                                        "enableSparklines": false,
+                                        "operation": "Summary",
+                                        "ColumnsTitle": {
+                                            "Name": "コマンド",
+                                            "Value": "平均処理時間"
+                                        },
+                                        "Color": "#0072c6",
+                                        "thresholds": {
+                                            "isEnabled": false,
+                                            "values": [
+                                                {
+                                                    "name": "Normal",
+                                                    "threshold": "Default",
+                                                    "color": "#009e49",
+                                                    "isDefault": true
+                                                },
+                                                {
+                                                    "name": "Warning",
+                                                    "threshold": "60",
+                                                    "color": "#fcd116",
+                                                    "isDefault": false
+                                                },
+                                                {
+                                                    "name": "Error",
+                                                    "threshold": "90",
+                                                    "color": "#ba141a",
+                                                    "isDefault": false
+                                                }
+                                            ]
+                                        },
+                                        "NameDSVSeparator": "",
+                                        "NavigationQuery": "{selected item}"
+                                    }
+                                }
+                            }
+                        ],
+                        "OverviewTile": {
+                            "Id": "SingleQueryDonutBuilderTileV1",
+                            "Type": "OverviewTile",
+                            "Version": 0,
+                            "Configuration": {
+                                "Donut": {
+                                    "Query": "* Type=SCHEDULER_Command_CL | measure count() by ComName_s",
+                                    "CenterLegend": {
+                                        "Text": "Total",
+                                        "Operation": "Sum",
+                                        "ArcsToSelect": []
+                                    },
+                                    "Options": {
+                                        "colors": [
+                                            "#00188f",
+                                            "#0072c6",
+                                            "#00bcf2"
+                                        ],
+                                        "valueColorMapping": []
+                                    }
+                                },
+                                "Advanced": {
+                                    "DataFlowVerification": {
+                                        "Enabled": true,
+                                        "Query": "Type=SCHEDULER_Command_CL",
+                                        "Message": "Waiting on the initial JP1/AJS3 log ingestion"
+                                    }
+                                }
+                            }
+                        }
+                    }
+            }
+            ]
+        },
+
+        {
+                "name": "[variables('omsSolutions').customSolution.solutionName]",
+                "type": "Microsoft.OperationsManagement/solutions",
+                "apiVersion": "[variables('LogAnalyticsApiVersion')]",
+                "location": "[parameters('workspaceRegionId')]",
+                "dependsOn": [
+                    "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]",
+                    "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'), '/views/', variables('customViews').view1.name)]"
+                ],
+                "plan": {
+                   "name": "[variables('omsSolutions').customSolution.solutionName]",
+                   "product": "[variables('omsSolutions').customSolution.name]",
+                   "publisher": "[variables('omsSolutions').customSolution.publisher]",
+                   "promotionCode": ""
+                },
+                "properties": {
+                    "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]",
+                    "referencedResources": [
+                    ],
+                    "containedResources": [
+                        "[resourceId('Microsoft.OperationalInsights/workspaces/views/', parameters('workspaceName'), variables('customViews').view1.name)]"
+                    ]
+                }
+        }
+   ],
+
+   "outputs": {
+    "workspaceUri" : {
+        "type" : "string",
+        "value": "[concat('\"',reference(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), variables('LogAnalyticsApiVersion')).customerId,'\"')]"
+    },
+    "workspaceKey" : {
+        "type" : "string",
+        "value": "[concat('\"',listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), variables('LogAnalyticsApiVersion')).primarySharedKey,'\"')]"
+    }
+   }
+
+}

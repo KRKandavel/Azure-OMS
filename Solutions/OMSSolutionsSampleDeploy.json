@@ -52,14 +52,29 @@
             "metadata": {
                 "description": "Specify pricing tier for your workspace usage"
             }
+        },
+
+        "_artifactsLocation": {
+            "type": "string",
+            "defaultValue": "https://raw.githubusercontent.com/KRKandavel/Azure-OMS/master/Solutions",
+            "metadata": {
+                "description": "URI to artifacts location"
+            }
+        },
+
+        "_artifactsLocationSasToken": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The sasToken required to access _artifactsLocation.  When the template is deployed using the accompanying scripts, a sasToken will be automatically generated"
+            }
         }
     },
 
     "variables": {
-        "_artifactsLocation": "https://raw.githubusercontent.com/KRKandavel/Azure-OMS/master/Solutions",
         "nestedTemplates": {
-            "omsSolutionsSample41": "[concat(variables('_artifactsLocation'), '/childtemplates/OMSSolutionsSample41.json')]",
-            "omsSolutionsSample42": "[concat(variables('_artifactsLocation'), '/childtemplates/OMSSolutionsSample42.json')]"
+            "omsSolutionsSample41": "[concat(parameters('_artifactsLocation'), '/childtemplates/OMSSolutionsSample41.json')]",
+            "omsSolutionsSample42": "[concat(parameters('_artifactsLocation'), '/childtemplates/OMSSolutionsSample42.json')]"
         }
     },
 
@@ -72,7 +87,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[variables('nestedTemplates').omsSolutionsSample41]",
+                    "uri": "[concat(variables('nestedTemplates').omsSolutionsSample41, parameters('_artifactsLocationSasToken'))]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
@@ -103,7 +118,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[variables('nestedTemplates').omsSolutionsSample42]",
+                    "uri": "[concat(variables('nestedTemplates').omsSolutionsSample42, parameters('_artifactsLocationSasToken'))]",                    
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
