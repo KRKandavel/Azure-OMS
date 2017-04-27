@@ -19,7 +19,7 @@
             "metadata": {
                 "description": "Specify the region for your OMS workspace"
             }
-        },
+       },
 
         "accountName": {
             "type": "string",
@@ -29,7 +29,7 @@
             }
         },
 
-        "regionId": {
+       "regionId": {
             "type": "string",
             "defaultValue": "SouthEast Asia",
             "allowedValues": [
@@ -58,8 +58,8 @@
     "variables": {
         "_artifactsLocation": "https://raw.githubusercontent.com/KRKandavel/Azure-OMS/master/Solutions/",
         "nestedTemplates": {
-            "omsSolutionsSample41": "[concat(variables('_artifactsLocation'), '/childtemplates/OMSSolutionsSample41.json')]",
-            "omsSolutionsSample42": "[concat(variables('_artifactsLocation'), '/childtemplates/OMSSolutionsSample42.json')]"
+            "omsSolutionsSample41": "[concat(variables('_artifactsLocation'), '/OMSSolutionsSample41.json')]",
+            "omsSolutionsSample42": "[concat(variables('_artifactsLocation'), '/OMSSolutionsSample42.json')]"
         }
     },
 
