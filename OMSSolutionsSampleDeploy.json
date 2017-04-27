@@ -1,0 +1,145 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the name of your existing OMS Workspace name to store the configuration"
+            }
+        },
+
+        "workspaceRegionId": {
+            "type": "string",
+            "defaultValue": "SouthEast Asia",
+            "allowedValues": [
+                "SouthEast Asia",
+                "East US"
+            ],
+            "metadata": {
+                "description": "Specify the region for your OMS workspace"
+            }
+        },
+
+        "accountName": {
+            "type": "string",
+            "defaultValue": "JP1/AJS3 Automation Account",
+            "metadata": {
+                "description": "Specify the name of your Automation Account"
+            }
+        },
+
+        "regionId": {
+            "type": "string",
+            "defaultValue": "SouthEast Asia",
+            "allowedValues": [
+                "SouthEast Asia",
+                "East US2"
+            ],
+            "metadata": {
+                "description": "Specify region for your automation account"
+            }
+        },
+
+        "pricingTier": {
+            "type": "string",
+            "defaultValue": "pernode",
+            "allowedValues": [
+                "pernode",
+                "Standalone",
+                "Free"
+            ],
+            "metadata": {
+                "description": "Specify pricing tier for your workspace usage"
+            }
+        },
+
+        "_artifactsLocation": {
+            "type": "string",
+            "defaultValue": "https://raw.githubusercontent.com/KRKandavel/Azure-OMS/master/Solutions",
+            "metadata": {
+                "description": "URI to artifacts location"
+            }
+        },
+
+        "_artifactsLocationSasToken": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The sasToken required to access _artifactsLocation.  When the template is deployed using the accompanying scripts, a sasToken will be automatically generated"
+            }
+        }
+    },
+
+    "variables": {
+        "nestedTemplates": {
+            "omsSolutionsSample41": "[concat(parameters('_artifactsLocation'), '/childtemplates/OMSSolutionsSample41.json')]",
+            "omsSolutionsSample42": "[concat(parameters('_artifactsLocation'), '/childtemplates/OMSSolutionsSample42.json')]"
+        }
+    },
+
+    "resources": [
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2016-02-01",
+            "name": "OMSSolutionsSample41",
+            "dependsOn": [],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('nestedTemplates').omsSolutionsSample41, parameters('_artifactsLocationSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "workspaceName": {
+                        "value": "[parameters('workspaceName')]"
+                    },
+                    "workspaceRegionId": {
+                        "value": "[parameters('workspaceRegionId')]"
+                    },
+                    "accountName": {
+                        "value": "[parameters('accountName')]"
+                    },
+                    "regionId": {
+                        "value": "[parameters('regionId')]"
+                    },
+                    "pricingTier": {
+                        "value": "[parameters('pricingTier')]"
+                    }
+                }
+            }
+        },
+
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2016-02-01",
+            "name": "OMSSolutionsSample42",
+            "dependsOn": [],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('nestedTemplates').omsSolutionsSample42, parameters('_artifactsLocationSasToken'))]",                    
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "workspaceName": {
+                        "value": "[parameters('workspaceName')]"
+                    },
+                    "workspaceRegionId": {
+                        "value": "[parameters('workspaceRegionId')]"
+                    },
+                    "accountName": {
+                        "value": "[parameters('accountName')]"
+                    },
+                    "regionId": {
+                        "value": "[parameters('regionId')]"
+                    },
+                    "pricingTier": {
+                        "value": "[parameters('pricingTier')]"
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}
