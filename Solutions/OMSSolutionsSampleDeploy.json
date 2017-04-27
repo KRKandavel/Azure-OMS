@@ -56,7 +56,7 @@
     },
 
     "variables": {
-        "_artifactsLocation": "https://raw.githubusercontent.com/KRKandavel/Azure-OMS/master/Solutions",
+        "_artifactsLocation": "https://raw.githubusercontent.com/KRKandavel/Azure-OMS/master/Solutions/",
         "nestedTemplates": {
             "omsSolutionsSample41": "[concat(variables('_artifactsLocation'), '/childtemplates/OMSSolutionsSample41.json')]",
             "omsSolutionsSample42": "[concat(variables('_artifactsLocation'), '/childtemplates/OMSSolutionsSample42.json')]"
